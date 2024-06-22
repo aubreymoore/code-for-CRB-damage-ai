@@ -3,24 +3,16 @@ from tkinter import ttk
 import subprocess
 import sqlite3
 
-conn = sqlite3.connect('/home/aubrey/Desktop/Guam07-training-set/code/mydb.db')
-conn.row_factory = sqlite3.Row # enables getting results as a list of dicts 
-cur = conn.cursor()
-cur.execute('''select * from boxes
-            order by conf ASC
-            limit 5''')
-rows = cur.fetchall()
-conn.close()
-
-for row in rows:
-    print(dict(row))
-
-
-
-   
-i = 0
-imax = len(rows) - 1
-proc = None
+def get_data():
+    conn = sqlite3.connect('/home/aubrey/Desktop/Guam07-training-set/code/mydb.db')
+    conn.row_factory = sqlite3.Row # enables getting results as a list of dicts 
+    cur = conn.cursor()
+    cur.execute('''select * from boxes
+                order by conf ASC
+                limit 5''')
+    rows = cur.fetchall()
+    conn.close()
+    return rows
 
 def annotate(imagepath, proc):
     # proc = subprocess.run(
@@ -37,51 +29,59 @@ def annotate(imagepath, proc):
         )
     return proc
 
-def first():
-    global i
+def first(i):
     i = 0
     txt_i = ttk.Label(master=window, text=i)
     txt_i.grid(row=2,column=4)
-    update_and_annotate()
+    update_and_annotate(proc)
+    return i
 
-def previous():
-    global i
+def previous(i):
     i = max(i-1, 0)
     txt_i = ttk.Label(master=window, text=i)
     txt_i.grid(row=2,column=4)
-    update_and_annotate()
+    update_and_annotate(proc)
+    return i
  
-def next():
-    global i
+def next(i):
     i = min(i+1, imax)
     txt_i = ttk.Label(master=window, text=i)
     txt_i.grid(row=2,column=4)
-    update_and_annotate()
+    update_and_annotate(proc)
+    return i
 
-def last():
-    global i
+def last(i):
     i = imax
-    update_and_annotate()
+    update_and_annotate(proc)
+    return i
        
-def update_and_annotate(): 
-    global proc   
+def update_and_annotate(proc): 
     txt_i = ttk.Label(master=window, text=i)
     txt_i.grid(row=2,column=4)
     imagepath = rows[i]['imagepath']
     print('imagepath')
     proc = annotate(imagepath, proc)
+    return proc
+
+# MAIN
+
+rows = get_data()
+i = 0
+imax = len(rows) - 1
+proc = None
+imagepath = None
  
 window = tk.Tk()
 window.title('labeltool')
 window.geometry('350x175')
 
-btn_first = ttk.Button(master=window, text='first', command=first)
+btn_first = ttk.Button(master=window, text='first', command=first(i))
 btn_first.grid(row=2, column=0)
-btn_previous = ttk.Button(master=window, text='previous', command=previous)
+btn_previous = ttk.Button(master=window, text='previous', command=previous(i))
 btn_previous.grid(row=2, column=1)
-btn_next = ttk.Button(master=window, text='next', command=next)
+btn_next = ttk.Button(master=window, text='next', command=next(i))
 btn_next.grid(row=2, column=2)
-btn_last = ttk.Button(master=window, text='last', command=last)
+btn_last = ttk.Button(master=window, text='last', command=last(i))
 btn_last.grid(row=2, column=3)
 
 window.mainloop()

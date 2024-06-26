@@ -3,17 +3,20 @@ from tkinter import ttk
 import subprocess
 import sqlite3
 from icecream import ic
+import os
 
-DATABASE_PATH = '/home/aubrey/Desktop/Guam07-training-set/code/mydb.db'
+OBJECTS_DB_FILE_PATH = '/home/aubrey/Desktop/Guam07-training-set/code/rawdatasubset.sqlite3'
+NEW_DATASET_DIR = '/home/aubrey/Desktop/Guam07-training-set/datasets/rawdatasubset'
 
 def get_data():
     ic()
     sql = '''
-    select * from boxes
+    select * from detected_objects
+    where subset != 'test'
     order by conf ASC
     limit 5
     '''
-    conn = sqlite3.connect(DATABASE_PATH)
+    conn = sqlite3.connect(OBJECTS_DB_FILE_PATH)
     conn.row_factory = sqlite3.Row # get results as a list of dicts 
     cur = conn.cursor()
     cur.execute(sql)
@@ -28,13 +31,16 @@ def annotate():
     if proc:
         ic('about to terminate proc')
         proc.terminate()
-    imagepath = rows[i]['imagepath']
+    subset = rows[i]['subset']
+    filename = os.path.basename(rows[i]['imagepath'])
+    imagepath = f'{NEW_DATASET_DIR}/{subset}/{filename}'
+    ic(imagepath)
     proc = subprocess.Popen(['python3', '/home/aubrey/labelImg/labelImg.py', imagepath])
     ic(proc)
 
-def update_and_annotate(i, proc): 
-    ic()
-    annotate()
+# def update_and_annotate(i, proc): 
+#     ic()
+#     annotate()
 
 def first():
     ic()
@@ -86,6 +92,8 @@ btn_last.grid(row=2, column=3)
 
 # Initialize global variables
 rows = get_data()
+ic(rows[0]['imagepath'], rows[0]['subset'])
+
 i = 0
 imax = len(rows) - 1
 proc = None

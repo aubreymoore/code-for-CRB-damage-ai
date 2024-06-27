@@ -5,8 +5,8 @@ import sqlite3
 from icecream import ic
 import os
 
-OBJECTS_DB_FILE_PATH = '/home/aubrey/Desktop/Guam07-training-set/code/rawdatasubset.sqlite3'
-NEW_DATASET_DIR = '/home/aubrey/Desktop/Guam07-training-set/datasets/rawdatasubset'
+OBJECTS_DB_FILE_PATH = '/home/aubrey/Desktop/Guam07-training-set/code/2024-06-27.sqlite3'
+NEW_DATASET_DIR = '/home/aubrey/Desktop/Guam07-training-set/datasets/2024-06-27'
 
 def get_data():
     ic()

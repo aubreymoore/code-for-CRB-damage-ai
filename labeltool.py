@@ -14,7 +14,7 @@ def get_data():
     select * from detected_objects
     where subset != 'test'
     order by conf ASC
-    limit 5
+    LIMIT 50
     '''
     conn = sqlite3.connect(OBJECTS_DB_FILE_PATH)
     conn.row_factory = sqlite3.Row # get results as a list of dicts 
@@ -55,11 +55,9 @@ def previous():
     add_info()
     
 def add_info():
-    txt_i = ttk.Label(master=window, text=f'{i+1} of {imax+1}')
-    txt_i.grid(row=3,column=0)
-    
-    txt_x = ttk.Label(master=window, text=f'x: {round(rows[i]["x"],2)}')
-    txt_x.grid(row=3, column=1)
+    info = f'{i+1} of {imax+1}   xpos: {rows[i]["xpos"]}   conf: {rows[i]["conf"]:.2f}   cls: {rows[i]["cls"]}'
+    txt_info = ttk.Label(master=window, text=info)
+    txt_info.grid(row=3, column=0, columnspan=4)
     annotate()
     
 def next():  

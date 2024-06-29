@@ -5,14 +5,14 @@ import sqlite3
 from icecream import ic
 import os
 
-OBJECTS_DB_FILE_PATH = '/home/aubrey/Desktop/Guam07-training-set/code/2024-06-27.sqlite3'
-NEW_DATASET_DIR = '/home/aubrey/Desktop/Guam07-training-set/datasets/2024-06-27'
+OBJECTS_DB_FILE_PATH = '/home/aubrey/Desktop/Guam07-training-set/code/rawdatasubset.sqlite3'
+NEW_DATASET_DIR = '/home/aubrey/Desktop/Guam07-training-set/datasets/rawdatasubset'
 
 def get_data():
     ic()
     sql = '''
-    select * from detected_objects
-    where subset != 'test'
+    select rowid, * from detected_objects
+    where subset != 'test' AND edited_flag = 0
     order by conf ASC
     LIMIT 50
     '''
@@ -24,6 +24,12 @@ def get_data():
     conn.close()
     return rows
 
+def set_edited_flag(rowid):
+    conn = sqlite3.connect(OBJECTS_DB_FILE_PATH)
+    conn.execute(f'UPDATE detected_objects SET edited_flag = 1 WHERE rowid={rowid};')
+    conn.commit()
+    conn.close()
+ 
 def annotate():
     global proc
     ic()
@@ -37,6 +43,7 @@ def annotate():
     ic(imagepath)
     proc = subprocess.Popen(['python3', '/home/aubrey/labelImg/labelImg.py', imagepath])
     ic(proc)
+    set_edited_flag(rows[i]['rowid'])
 
 # def update_and_annotate(i, proc): 
 #     ic()

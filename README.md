@@ -6,7 +6,7 @@ GitHub repository: <https://github.com/aubreymoore/code-for-CRB-damage-ai.git>
 
 Note: The git repository contains only files from the Guam07-training-set/code folder.
 
-## Introduction
+## Background
 
 This repository contains code and documentation for object detectors which scan images to detect coconut palms and distinctive damage to these palms (v-shaped cuts) caused coconut rhinoceros beetles. 
 
@@ -25,4 +25,6 @@ Roadside surveys were also performed to help delineate new CRB populations on Ro
 
 Further details and background can be found in [this unfunded preproposal](https://aubreymoore.github.io/serdp-crb-damage/preproposal.pdf).
 
-## Work plan
+## Current activity
+
+

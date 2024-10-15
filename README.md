@@ -1,10 +1,8 @@
 # code-for-CRB-damage-ai
 
-Local folder: Guam07-training-set
+Local folder: Guam07-training-set/code
 
 GitHub repository: <https://github.com/aubreymoore/code-for-CRB-damage-ai.git>
-
-Note: The git repository contains only files from the Guam07-training-set/code folder.
 
 ## Background
 

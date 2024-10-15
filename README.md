@@ -23,6 +23,6 @@ Ten island-wide CRB damage surveys were performed on Guam between October 2020 a
 Inteactive maps and data are publicly available in a [GitHub repository](https://aubreymoore.github.io/Guam-CRB-web-maps/).
 Roadside surveys were also performed to help delineate new CRB populations on Rota Island and Majuro Atoll.
 
-Furhter details and background can be found in [this unfunded preproposal](https://aubreymoore.github.io/serdp-crb-damage/preproposal.pdf).
+Further details and background can be found in [this unfunded preproposal](https://aubreymoore.github.io/serdp-crb-damage/preproposal.pdf).
 
 ## Work plan

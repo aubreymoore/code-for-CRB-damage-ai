@@ -9,11 +9,8 @@ Note: The git repository contains only files from the Guam07-training-set/code f
 ## Introduction
 
 This repository contains code and documentation for object detectors which scan images to detect coconut palms and distinctive damage to these palms (v-shaped cuts) caused coconut rhinoceros beetles. 
-Details and background can be found in [this unfunded preproposal](https://aubreymoore.github.io/serdp-crb-damage/preproposal.pdf).
 
-## Current status
-
-Detection models for CRB damage were originally trained using a RCNN model.
+Detection models for CRB damage were originally trained using a RCNN model in 2020.
 These models detected coconut palms in images, placed bounding boxes around them, and classified damage using a five point index (none, low, medium, high, and dead).
 An additional detector detected v-shaped cuts and placed polygons around these.
 These models were tested in roadside surveys on Guam. 
@@ -25,5 +22,7 @@ Custom software was used to convert survey data into survey results into interac
 Ten island-wide CRB damage surveys were performed on Guam between October 2020 and September 2023.
 Inteactive maps and data are publicly available in a [GitHub repository](https://aubreymoore.github.io/Guam-CRB-web-maps/).
 Roadside surveys were also performed to help delineate new CRB populations on Rota Island and Majuro Atoll.
+
+Furhter details and background can be found in [this unfunded preproposal](https://aubreymoore.github.io/serdp-crb-damage/preproposal.pdf).
 
 ## Work plan

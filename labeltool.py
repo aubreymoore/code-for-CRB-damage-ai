@@ -1,108 +1,104 @@
-import tkinter as tk
-from tkinter import ttk
+###############################################################################
+# labeltool.py
+#
+# Launch in a terminal window using "python3 labeltool.py"
+#
+# This Python script runs labelImg.py for annotating images within a YOLOv8 dataset.
+#
+# Requirements:
+#
+# 1. python3 installed
+# 2. labelImg installed (simply clone https://github.com/HumanSignal/labelImg.git)
+# 3. A YOLO dataset
+# 4. A custom SQLite database
+#
+###############################################################################
+
 import subprocess
 import sqlite3
-from icecream import ic
-import os
+import pandas as pd
+import sys
+import click
 
-OBJECTS_DB_FILE_PATH = '/home/aubrey/Desktop/Guam07-training-set/code/rawdatasubset.sqlite3'
-NEW_DATASET_DIR = '/home/aubrey/Desktop/Guam07-training-set/datasets/rawdatasubset'
+DATASET_PATH = '/home/aubrey/Desktop/Guam07-training-set/datasets/active_learning2'
+LABELIMG_PATH = '/home/aubrey/labelImg/labelImg.py'
+DB_PATH = '/home/aubrey/Desktop/Guam07-training-set/code/active_learning2.sqlite3'
 
-def get_data():
-    ic()
+def run_labelImg(subset: str, filename: str):
+    """
+    Opens a single image for annotation by labelImg
+    """
+    imagepath = f'{DATASET_PATH}/{subset}/{filename}'
+    # subprocess.call(['python3', LABELIMG_PATH, imagepath], stdout=subprocess.DEVNULL)
+    subprocess.run(['python3', LABELIMG_PATH, imagepath], stdout=sys.stdout)
+    return
+
+def get_lowest_conf_obj(conn: sqlite3.Connection):
+    """
+    Returns a pandas series for the detected object within the database which has the lowest confidence level
+    """
     sql = '''
-    select rowid, * from detected_objects
-    where subset != 'test' AND edited_flag = 0
-    order by conf ASC
-    LIMIT 50
+    SELECT img.subset, obj.* FROM obj LEFT JOIN img ON img.filename = obj.filename
+    WHERE edit_flag=0
+    ORDER BY conf ASC
+    LIMIT 1;
     '''
-    conn = sqlite3.connect(OBJECTS_DB_FILE_PATH)
-    conn.row_factory = sqlite3.Row # get results as a list of dicts 
-    cur = conn.cursor()
-    cur.execute(sql)
-    rows = cur.fetchall()
-    conn.close()
-    return rows
+    df = pd.read_sql_query(sql, conn)
+    return df.iloc[0]
 
-def set_edited_flag(rowid):
-    conn = sqlite3.connect(OBJECTS_DB_FILE_PATH)
-    conn.execute(f'UPDATE detected_objects SET edited_flag = 1 WHERE rowid={rowid};')
+def get_objects_str(conn: sqlite3.Connection, filename: str):
+    """
+    Returns a string containing data for all setected objects in an image
+    """
+    sql = f'''
+    SELECT * FROM obj
+    WHERE filename = "{filename}"
+    ORDER BY x - (w / 2);
+    '''
+    df = pd.read_sql_query(sql, conn)
+    return df.to_string(float_format=lambda x: '%.2f' % x)
+
+def raise_edit_flag(conn: sqlite3.Connection, filename: str):
+    """
+    Sets img.edit_flag to 1, indicating that image annotations have been edited 
+    """
+    sql = f'UPDATE img SET edit_flag=1 WHERE filename="{filename}";'
+    conn.execute(sql)
     conn.commit()
-    conn.close()
- 
-def annotate():
-    global proc
-    ic()
-    ic(proc)
-    if proc:
-        ic('about to terminate proc')
-        proc.terminate()
-    subset = rows[i]['subset']
-    filename = os.path.basename(rows[i]['imagepath'])
-    imagepath = f'{NEW_DATASET_DIR}/{subset}/{filename}'
-    ic(imagepath)
-    proc = subprocess.Popen(['python3', '/home/aubrey/labelImg/labelImg.py', imagepath])
-    ic(proc)
-    set_edited_flag(rows[i]['rowid'])
-
-# def update_and_annotate(i, proc): 
-#     ic()
-#     annotate()
-
-def first():
-    ic()
-    global i
-    i = 0
-    add_info()
     
-def previous():
-    ic()
-    global i
-    i = max(i-1, 0)
-    add_info()
+def reset_edit_flags(conn: sqlite3.Connection):
+    """
+    Resets img.edit_flag to 0 for all images in database
+    """
+    sql = 'UPDATE img SET edit_flag=0;'
+    conn.execute(sql)
+    conn.commit()
     
-def add_info():
-    info = f'{i+1} of {imax+1}   xpos: {rows[i]["xpos"]}   conf: {rows[i]["conf"]:.2f}   cls: {rows[i]["cls"]}'
-    txt_info = ttk.Label(master=window, text=info)
-    txt_info.grid(row=3, column=0, columnspan=4)
-    annotate()
+def get_editted_img_count(conn: sqlite3.Connection) -> int:
+    sql = 'SELECT COUNT(*) FROM img WHERE edit_flag=1;'
+    n = conn.execute(sql).fetchone()[0]
+    return(n)
     
-def next():  
-    ic()
-    global i
-    i = min(i+1, imax)
-    add_info()
-    
-def last():
-    ic()
-    global i
-    i = imax
-    add_info()
-       
+#####################################################################
 # MAIN
+#####################################################################
 
-# set up GUI
-window = tk.Tk()
-window.title('labeltool')
-window.geometry('350x175')
-
-btn_first = ttk.Button(master=window, text='first', command=first)
-btn_first.grid(row=2, column=0)
-btn_previous = ttk.Button(master=window, text='previous', command=previous)
-btn_previous.grid(row=2, column=1)
-btn_next = ttk.Button(master=window, text='next', command=next)
-btn_next.grid(row=2, column=2)
-btn_last = ttk.Button(master=window, text='last', command=last)
-btn_last.grid(row=2, column=3)
-
-# Initialize global variables
-rows = get_data()
-ic(rows[0]['imagepath'], rows[0]['subset'])
-
-i = 0
-imax = len(rows) - 1
-proc = None
-first()
-
-# Start GUI
-window.mainloop()
+conn = sqlite3.connect(DB_PATH)
+c = ''
+while c != 'q':
+    click.clear()
+    editted_img_count = get_editted_img_count(conn)
+    print(f'{editted_img_count=}\nPress q to quit; <space> to annotate; r to reset edit_flags to 0')
+    c = click.getchar()
+    
+    if c == ' ':
+        click.clear()
+        r = get_lowest_conf_obj(conn)
+        subset, filename = r.subset, r.filename
+        print(f'{get_objects_str(conn, filename)}') 
+        run_labelImg(subset, filename) 
+        raise_edit_flag(conn, filename)
+         
+    if c == 'r':
+        reset_edit_flags(conn)
+conn.close()

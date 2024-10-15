@@ -23,6 +23,7 @@ Updated June 16, 2024
         - [Settings](#settings)
         - [Results](#results)
         - [Notes](#notes)
+            - [Dataset structure](#dataset-structure)
 
 <!-- /TOC -->
 ## Software Tools
@@ -69,7 +70,7 @@ empty
 ### make-labels.ipynb  
 This notebook constructs a YOLOv8 training set. 
 
-INPUT: A **rawdata** folder containing images and pickle files constructed by **detect_rb_damage.ipynb**.
+INPUT: A **rawdata** folder containing images and pickle files constructed by **detect_crb_damage.ipynb**.
 
 OUTPUT: A training set folder.
 ### subset.ipynb
@@ -173,7 +174,7 @@ fatal
 vcut
 ```
 
-- Looks like it is possible to create a dataset where images (\*.jpg) and labels(\*.txt) occur in the same folder. See https://github.com/ultralytics/ultralytics/issues/3087. This is great because this is the data structure used by labelImg. Will test this idea. Note that labelImg silently rejects *.txt files a confidence value has been added. This means we need to store confidence values elsewhere.
+Looks like it is possible to create a dataset where images (\*.jpg) and labels(\*.txt) occur in the same folder. See https://github.com/ultralytics/ultralytics/issues/3087. This is great because this is the data structure used by labelImg. Will test this idea. Note that labelImg silently rejects *.txt files a confidence value has been added. This means we need to store confidence values elsewhere.
 ```
 1 0.358854 0.488889 0.229167 0.964815 is OK
 1 0.358854 0.488889 0.229167 0.964815 0.123 will cause rejection of the *.txt file

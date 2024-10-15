@@ -27,5 +27,25 @@ Further details and background can be found in [this unfunded preproposal](https
 
 ## Current status
 
+* I retrained the object detectors using YOLOv8. 
+This change vastly improved performance, allowing the model to run in real time.
+* I wrote an Android smartphone app and submitted it to Google Play Store to demonstrate real time 
+detection of CRB damage.
+* I retrained the object detectors after reducing the class count from 6 to 3 by merging 
+none, low, medium and high into live.
 
+original classes | new classes
+------ |-----
+none   | live
+low    | live
+medium | live
+high   | live
+dead   | dead
+vcut   | vcut
+
+* The current 3-class model is stored in /home/aubrey/Desktop/Guam07-training-set/datasets/3class/runs/detect/train5/weights/best.pt.<br>[confusion matrix](models/3class/train5/confusion_matrix.png)<br>[normalized confusion matrix](models/3class/train5/confusion_matrix_normalized.png)
+
+
+
+ 
 

@@ -45,7 +45,19 @@ vcut   | vcut
 
 * The current 3-class model is stored in /home/aubrey/Desktop/Guam07-training-set/datasets/3class/runs/detect/train5/weights/best.pt.<br>[confusion matrix](models/3class/train5/confusion_matrix.png)<br>[normalized confusion matrix](models/3class/train5/confusion_matrix_normalized.png)
 
+## Current objectives
 
+* The training data suffer from a class imbalance with 1800 **live** palms, 27 **dead** palms and 431 **vcuts**. I will correct this by adding additional images containing dead trees and vcuts from Guam surveys.
 
+* I will improve detection precision using active learning.
+
+* I will improve the smart phone app by:
+    * allowing the app to scan images stored on the cell cell phone in addition to scanning images streamed from the phone's camera
+    * adding storage of detection results in an embedded database 
+
+* I will publish an online version of the object detector on Google Colab which can be used for scanning uploaded images or images available on the internet.
+
+* I will write a user guide for the smart phone app.
+
+* I will document how to create interactive web maps using QGIS.
  
-
